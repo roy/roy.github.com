@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: liquid | Roy van der Meij's Blog]]></title>
-  <link href="http://roy.github.com/blog/categories/liquid/atom.xml" rel="self"/>
-  <link href="http://roy.github.com/"/>
-  <updated>2013-04-02T15:25:58+02:00</updated>
-  <id>http://roy.github.com/</id>
+  <link href="http://royvandermeij.com/blog/categories/liquid/atom.xml" rel="self"/>
+  <link href="http://royvandermeij.com/"/>
+  <updated>2013-04-02T15:31:13+02:00</updated>
+  <id>http://royvandermeij.com/</id>
   <author>
     <name><![CDATA[Roy van der Meij]]></name>
     <email><![CDATA[roy@royapps.nl]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Create a Liquid handler for Rails 3.1]]></title>
-    <link href="http://roy.github.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1/"/>
+    <link href="http://royvandermeij.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1/"/>
     <updated>2011-09-21T14:03:00+02:00</updated>
-    <id>http://roy.github.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1</id>
+    <id>http://royvandermeij.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1</id>
     <content type="html"><![CDATA[<p>Back in the days with rails 2 you could easily create a handler for liquid and have access to the instance variables you've created in your controller.
 However, the creators of liquid didn't like this approach and so when Rails 3 came out the functionality didn't get upgraded.</p>
 

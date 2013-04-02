@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://roy.github.com/sitemap.xml 
+Sitemap: http://royvandermeij.com/sitemap.xml 
