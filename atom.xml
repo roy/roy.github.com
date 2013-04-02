@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Roy van der Meij's Blog]]></title>
+  <link href="http://roy.github.com/atom.xml" rel="self"/>
+  <link href="http://roy.github.com/"/>
+  <updated>2013-04-02T12:13:37+02:00</updated>
+  <id>http://roy.github.com/</id>
+  <author>
+    <name><![CDATA[Roy van der Meij]]></name>
+    <email><![CDATA[roy@royapps.nl]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Create a Liquid handler for Rails 3.1]]></title>
+    <link href="http://roy.github.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1/"/>
+    <updated>2011-09-21T14:03:00+02:00</updated>
+    <id>http://roy.github.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1</id>
+    <content type="html"><![CDATA[<p>Back in the days with rails 2 you could easily create a handler for liquid and have access to the instance variables you&#8217;ve created in your controller.
+However, the creators of liquid didn&#8217;t like this approach and so when Rails 3 came out the functionality didn&#8217;t get upgraded.</p>
+
+<p>I needed this functionality today for a cms I&#8217;m working on so I took some time and headaches to figure this one out.</p>
+
+<h2>First: Add liquid as a dependency for your app</h2>
+
+<figure class='code'><figcaption><span>Gemfile.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">gem</span> <span class="s2">&quot;liquid&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Second: Create the handler</h2>
+
+<figure class='code'><figcaption><span>lib/action_view/template/handlers/liquid.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ActionView</span><span class="o">::</span><span class="ss">Template</span><span class="p">:</span><span class="ss">:Handlers</span><span class="o">::</span><span class="no">Liquid</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">call</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+</span><span class='line'>    <span class="s2">&quot;ActionView::Template::Handlers::Liquid.new(self).render(</span><span class="si">#{</span><span class="n">template</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">, local_assigns)&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">view</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@view</span> <span class="o">=</span> <span class="n">view</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">local_assigns</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>    <span class="vi">@view</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">headers</span><span class="o">[</span><span class="s2">&quot;Content-Type&quot;</span><span class="o">]</span> <span class="o">||=</span> <span class="s1">&#39;text/html; charset=utf-8&#39;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assigns</span> <span class="o">=</span> <span class="vi">@view</span><span class="o">.</span><span class="n">assigns</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="vi">@view</span><span class="o">.</span><span class="n">content_for?</span><span class="p">(</span><span class="ss">:layout</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">assigns</span><span class="o">[</span><span class="s2">&quot;content_for_layout&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="vi">@view</span><span class="o">.</span><span class="n">content_for</span><span class="p">(</span><span class="ss">:layout</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="n">assigns</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="n">local_assigns</span><span class="o">.</span><span class="n">stringify_keys</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">controller</span> <span class="o">=</span> <span class="vi">@view</span><span class="o">.</span><span class="n">controller</span>
+</span><span class='line'>    <span class="n">filters</span> <span class="o">=</span> <span class="k">if</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:liquid_filters</span><span class="p">,</span> <span class="kp">true</span><span class="p">)</span>
+</span><span class='line'>                <span class="n">controller</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:liquid_filters</span><span class="p">)</span>
+</span><span class='line'>              <span class="k">elsif</span> <span class="n">controller</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:master_helper_module</span><span class="p">)</span>
+</span><span class='line'>                <span class="o">[</span><span class="n">controller</span><span class="o">.</span><span class="n">master_helper_module</span><span class="o">]</span>
+</span><span class='line'>              <span class="k">else</span>
+</span><span class='line'>                <span class="o">[</span><span class="n">controller</span><span class="o">.</span><span class="n">_helpers</span><span class="o">]</span>
+</span><span class='line'>              <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">liquid</span> <span class="o">=</span> <span class="ss">Liquid</span><span class="p">:</span><span class="ss">:Template</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">liquid</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">assigns</span><span class="p">,</span> <span class="ss">:filters</span> <span class="o">=&gt;</span> <span class="n">filters</span><span class="p">,</span> <span class="ss">:registers</span> <span class="o">=&gt;</span> <span class="p">{</span><span class="ss">:action_view</span> <span class="o">=&gt;</span> <span class="vi">@view</span><span class="p">,</span> <span class="ss">:controller</span> <span class="o">=&gt;</span> <span class="vi">@view</span><span class="o">.</span><span class="n">controller</span><span class="p">})</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">compilable?</span>
+</span><span class='line'>    <span class="kp">false</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Third: Create an initializer</h2>
+
+<figure class='code'><figcaption><span>config/initializers/liquid_template_handler.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;action_view/template/handlers/liquid&#39;</span>
+</span><span class='line'><span class="ss">ActionView</span><span class="p">:</span><span class="ss">:Template</span><span class="o">.</span><span class="n">register_template_handler</span> <span class="ss">:liquid</span><span class="p">,</span>
+</span><span class='line'>  <span class="ss">ActionView</span><span class="p">:</span><span class="ss">:Template</span><span class="o">::</span><span class="ss">Handlers</span><span class="p">:</span><span class="ss">:Liquid</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Fourth: Grab a beer, I just saved you 4 hours of puzzles and headaches :-)</h2>
+
+<p>Now you can create files like posts/index.html.liquid.
+In our case, we have our views in the database so we can render different views for different websites.
+The book <a href="http://pragprog.com/book/jvrails/crafting-rails-applications">Crafting Rails Applications</a> has an extraordinary chapter that shows you how put views in your database, worth every penny.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[royvandermeij.com Back Online]]></title>
+    <link href="http://roy.github.com/blog/2011/09/18/royvandermeij-dot-com-back-online/"/>
+    <updated>2011-09-18T12:24:00+02:00</updated>
+    <id>http://roy.github.com/blog/2011/09/18/royvandermeij-dot-com-back-online</id>
+    <content type="html"><![CDATA[<p>So it has been a while, but I&#8217;m back.
+I was thinking of creating a new blog site from scratch, but then I found out about <a href="http://octopress.org">octopress</a>. I quickly decided it was time to get my hands dirty and setup this new site.</p>
+
+<h2>What you&#8217;ll find here?</h2>
+
+<p>Mostly tech posts about rails, sproutcore, setup configurations etc.</p>
+
+<h2>Will you find it interesting?</h2>
+
+<p>I certainly hope so? Otherwise this site will just be a list of reminders for me to do some awesome stuff :)</p>
+
+<p>Hope to see you here around, and I’ll try not to let you down</p>
+]]></content>
+  </entry>
+  
+</feed>

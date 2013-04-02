@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: rails, | Roy van der Meij's Blog]]></title>
+  <link href="http://roy.github.com/blog/categories/rails/atom.xml" rel="self"/>
+  <link href="http://roy.github.com/"/>
+  <updated>2013-04-02T12:13:37+02:00</updated>
+  <id>http://roy.github.com/</id>
+  <author>
+    <name><![CDATA[Roy van der Meij]]></name>
+    <email><![CDATA[roy@royapps.nl]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Create a Liquid handler for Rails 3.1]]></title>
+    <link href="http://roy.github.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1/"/>
+    <updated>2011-09-21T14:03:00+02:00</updated>
+    <id>http://roy.github.com/blog/2011/09/21/create-a-liquid-handler-for-rails-3-dot-1</id>
+    <content type="html"><![CDATA[<p>Back in the days with rails 2 you could easily create a handler for liquid and have access to the instance variables you've created in your controller.
+However, the creators of liquid didn't like this approach and so when Rails 3 came out the functionality didn't get upgraded.</p>
+
+<p>I needed this functionality today for a cms I'm working on so I took some time and headaches to figure this one out.</p>
+
+<h2>First: Add liquid as a dependency for your app</h2>
+
+<p><code>ruby Gemfile.rb
+gem "liquid"
+</code></p>
+
+<h2>Second: Create the handler</h2>
+
+<p>``` ruby lib/action_view/template/handlers/liquid.rb
+class ActionView::Template::Handlers::Liquid
+  def self.call(template)</p>
+
+<pre><code>"ActionView::Template::Handlers::Liquid.new(self).render(#{template.source.inspect}, local_assigns)"
+</code></pre>
+
+<p>  end</p>
+
+<p>  def initialize(view)</p>
+
+<pre><code>@view = view
+</code></pre>
+
+<p>  end</p>
+
+<p>  def render(template, local_assigns = {})</p>
+
+<pre><code>@view.controller.headers["Content-Type"] ||= 'text/html; charset=utf-8'
+
+assigns = @view.assigns
+
+if @view.content_for?(:layout)
+  assigns["content_for_layout"] = @view.content_for(:layout)
+end
+assigns.merge!(local_assigns.stringify_keys)
+
+controller = @view.controller
+filters = if controller.respond_to?(:liquid_filters, true)
+            controller.send(:liquid_filters)
+          elsif controller.respond_to?(:master_helper_module)
+            [controller.master_helper_module]
+          else
+            [controller._helpers]
+          end
+
+liquid = Liquid::Template.parse(template)
+liquid.render(assigns, :filters =&gt; filters, :registers =&gt; {:action_view =&gt; @view, :controller =&gt; @view.controller})
+</code></pre>
+
+<p>  end</p>
+
+<p>  def compilable?</p>
+
+<pre><code>false
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<h2>Third: Create an initializer</h2>
+
+<p><code>ruby config/initializers/liquid_template_handler.rb
+require 'action_view/template/handlers/liquid'
+ActionView::Template.register_template_handler :liquid,
+  ActionView::Template::Handlers::Liquid
+</code></p>
+
+<h2>Fourth: Grab a beer, I just saved you 4 hours of puzzles and headaches :-)</h2>
+
+<p>Now you can create files like posts/index.html.liquid.
+In our case, we have our views in the database so we can render different views for different websites.
+The book <a href="http://pragprog.com/book/jvrails/crafting-rails-applications">Crafting Rails Applications</a> has an extraordinary chapter that shows you how put views in your database, worth every penny.</p>
+]]></content>
+  </entry>
+  
+</feed>
