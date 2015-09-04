@@ -17,7 +17,7 @@ But Method.to_proc is also quite handy.
 Let me show you.
 
 <div class='vimeo_wrapper'>
-  <iframe src='http://ascii.io/a/2591/raw'></iframe>
+  <iframe src='https://asciinema.org/a/2591/raw'></iframe>
 </div>
 
 Pretty awesome right?
