@@ -4,7 +4,7 @@
   <title><![CDATA[Roy van der Meij's Blog]]></title>
   <link href="http://royvandermeij.com/atom.xml" rel="self"/>
   <link href="http://royvandermeij.com/"/>
-  <updated>2013-04-02T16:28:14+02:00</updated>
+  <updated>2015-09-04T10:50:06+02:00</updated>
   <id>http://royvandermeij.com/</id>
   <author>
     <name><![CDATA[Roy van der Meij]]></name>
@@ -30,7 +30,7 @@ Sure, we all know Rails&#8217; symbol.to_proc:</p>
 Let me show you.</p>
 
 <div class='vimeo_wrapper'>
-  <iframe src='http://ascii.io/a/2591/raw'></iframe>
+  <iframe src='https://asciinema.org/a/2591/raw'></iframe>
 </div>
 
 
@@ -167,7 +167,7 @@ I was thinking of creating a new blog site from scratch, but then I found out ab
 
 <p>I certainly hope so? Otherwise this site will just be a list of reminders for me to do some awesome stuff :)</p>
 
-<p>Hope to see you here around, and I’ll try not to let you down</p>
+<p>Hope to see you here around, and I&#8217;ll try not to let you down</p>
 ]]></content>
   </entry>
   
